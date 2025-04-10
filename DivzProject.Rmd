@@ -1,0 +1,117 @@
+---
+title: "Divz Project"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+
+```{r setup, include=FALSE}
+# Importing libraries
+library(flexdashboard)
+library(tidyverse)
+library(highcharter)
+library(gt)
+library(htmltools)
+library(viridis)
+```
+
+```{r}
+# Importing data
+df <- read_csv('Pokedex2.csv', show_col_types = FALSE)
+```
+
+
+Pokedex
+================================================================================
+
+Column {.tabset .tabset-fade data-width="650"}
+--------------------------------------------------------------------------------
+
+### Total pokemon in each type (Based of Primary typing)
+
+```{r}
+#Color
+custom_colors <- viridis::turbo(n = 18)
+# Total Pokemon
+df %>%
+  group_by(`TYPE 1`)%>%
+  summarise(pokemonTotal = length(POKEMON))%>%
+  arrange(desc(pokemonTotal))%>%
+  hchart('column', hcaes(x = `TYPE 1`, y = pokemonTotal, color = custom_colors))%>%
+  hc_add_theme(hc_theme_google())%>%
+  hc_tooltip(pointFormat = '<b>Number of Pokemon: <b> {point,y}')%>%
+  hc_title(text = 'Total Pokemon in each Type (Based off Primary Typing) ',
+            style = list(fontSize = '18px', fontWidth = 'bold'))%>%
+  hc_credits(enable = TRUE, text = '@Mdurand')
+
+```
+
+### Total pokemon in each type (Based off Secondary typing)
+
+```{r}
+#Color
+custom_colors <- viridis::cividis(n = 19)
+# Total Pokemon
+df %>%
+  group_by(`TYPE 2`)%>%
+  summarise(pokemonTotal = length(POKEMON))%>%
+  arrange(desc(pokemonTotal))%>%
+  hchart('column', hcaes(x = `TYPE 2`, y = pokemonTotal, color = custom_colors))%>%
+  hc_add_theme(hc_theme_google())%>%
+  hc_tooltip(pointFormat = '<b>Number of Pokemon: <b> {point,y}')%>%
+  hc_title(text = 'Total Pokemon in each Type (Based off Secondary Typing) ',
+           style = list(fontSize = '18px', fontWidth = 'bold'))%>%
+  hc_credits(enable = TRUE, text = '@Mdurand')
+```
+
+Column {.tabset .tabset-fade data-width="350"}
+--------------------------------------------------------------------------------
+
+### Total Stats of Each pokemon (Seperated by Type)
+
+```{r}
+# Color
+custom_colors <- c("#7FFF00", "black", "navy", "gold", "pink", "firebrick", "red", "#F0FFFF", "#551A8B", "green", "#8B7355", "#98F5FF", "#838B8B", "#D15FEE", "#CD6889", "#EEC591", "#A2B5CD", "blue")
+# Type 1 Variable
+primaryType <- df$`TYPE 1`
+#Total stats
+df%>%
+  group_by(POKEMON)%>%
+  summarise(stats = TOTAL)%>%
+  hchart('scatter', hcaes(x = POKEMON, y = stats, group = primaryType))%>%
+  hc_colors(custom_colors)%>%
+  hc_add_theme(hc_theme_google())%>%
+  hc_tooltip(pointFormat = "<b> Total stats: <b> {point.y} <br> Pokemon: <b> {point.POKEMON}")%>%
+  hc_title(text = 'Total stats of each pokemon',
+           style = list(fontSize = '18px', fontWidth = 'bold'))
+  
+```
+
+### Pokedex Table
+
+```{r}
+# data table
+df1 <- df%>%
+  arrange(desc(TOTAL))
+# HTML table
+div(style = 'height:600px; overflow-y:scroll', gt(df1)%>%
+      tab_header(title = md('Pokedex'),
+                 subtitle = md('By overall stats'))%>%
+      opt_table_font(font = list(google_font('Chivo'), default_fonts()))%>%
+  tab_style(location = cells_column_labels(columns = everything()),
+            style = list(cell_borders(sides = 'bottom',
+                                      weight = px(2)),
+                         cell_text(weight = 'bold')))%>%
+  tab_options(table.font.size = px(12L),
+              table.border.top.style = 'none',
+              column_labels.border.bottom.width = 2,
+              table_body.border.top.style = 'none',
+              data_row.padding = px(3))
+)
+  
+  
+  
+  
+```
