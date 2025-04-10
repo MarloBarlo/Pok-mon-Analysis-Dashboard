@@ -5,7 +5,7 @@
 
 An interactive dashboard analyzing Pokémon statistics and type distributions from the classic franchise.
 
-[▶️ Try Live Demo](#) | [📥 Download Dataset](Pokedex2.csv)
+[📥 Download Dataset]([Pokedex2.csv](https://gist.github.com/armgilles/194bcff35001e7eb53a2a8b441e8b2c6))
 
 ## Features
 
